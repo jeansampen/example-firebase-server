@@ -2,6 +2,8 @@ import * as functions from "firebase-functions";
 import * as admin from "firebase-admin";
 
 admin.initializeApp();
+
+// Sending notifications upon event creations
 export const onEventAdded = functions.database
   .ref("/events/{eventId}")
   .onCreate((snapshot, context) => {
@@ -25,15 +27,17 @@ export const onEventAdded = functions.database
       });
       admin.messaging().sendToDevice(tokens, payload);
     });
-  });
+  });   
 
+
+// API for adding a player
 export const player = functions.https.onRequest((req, res) => {
   let ref_to_players = admin.database().ref("/players/");
   if (req.method === "POST") {
     console.log("POST");
     let player = req.body;
     return ref_to_players.push(player).then(() => {
-      res.send(player);
+      res.send("Success!");
     });
   }
 
@@ -47,13 +51,15 @@ export const player = functions.https.onRequest((req, res) => {
   return;
 });
 
+
+// API for adding an event
 export const event = functions.https.onRequest((req, res) => {
 	let ref_to_events = admin.database().ref("/events/");
   if (req.method === "POST") {
     console.log("POST");
     let event = req.body;
     return ref_to_events.push(event).then(() => {
-      res.send(event);
+      res.send("Success!");
     });
   }
 
