@@ -7,23 +7,24 @@ admin.initializeApp();
 export const onEventAdded = functions.database
   .ref("/events/{eventId}")
   .onCreate((snapshot, context) => {
-    let eventId = context.params.eventId;
-    let event = snapshot.val();
-    console.log("Created event with id ", eventId, " at ", event.place);
-    var payload = {
-      data: {
-        title: "DataTitle = " + eventId,
-        body: "DataBody = " + event.place
-      }
-    };
+    let event = snapshot.val();    
     let ref = admin.database().ref("/players/");
     return ref.once("value", snapshot => {
+        var payload = {
+            data: {
+              title: "New event has been created",
+              body: event.owner + " is hosting a game at " + event.place
+            }
+          };
       let players = snapshot.val();
       let tokens = [] as string[];
+      
       Object.keys(players).forEach(key => {
-        let token = players[key]["fcm_token"];
-        tokens.push(token);
-        console.log(token);
+        // Here we add a condition which will send a notification to all users a part from the owner
+        if(players[key]["facebook_name"] !== event.owner){
+            let token = players[key]["fcm_token"];
+            tokens.push(token);
+        }
       });
       admin.messaging().sendToDevice(tokens, payload);
     });
