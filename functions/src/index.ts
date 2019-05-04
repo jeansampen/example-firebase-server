@@ -31,6 +31,11 @@ export const onEventAdded = functions.database
   });   
 
 
+  // export const test = functions.https.onRequest((req, res) => {
+  //     res.send("Hello from AmazonMac deployed function");
+  //   })
+
+
 // API for adding a player
 export const player = functions.https.onRequest((req, res) => {
   let ref_to_players = admin.database().ref("/players/");
